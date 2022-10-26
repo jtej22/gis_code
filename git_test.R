@@ -10,3 +10,4 @@ z <- 4
 
 
 #shell test
+#cmd test
