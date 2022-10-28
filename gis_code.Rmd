@@ -1,0 +1,98 @@
+---
+title: "GIS Homework 4"
+output: html_document
+---
+```{r}
+library(sf)
+library(here)
+library(janitor)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(rmapshaper)
+library(maptools)
+library(RColorBrewer)
+library(classInt)
+library(sp)
+library(rgeos)
+library(tmap)
+library(tmaptools)
+library(rgdal)
+library(geojsonio)
+library(readr)
+
+```
+
+read in global gender inequality data and world countries shapefile
+```{r}
+raw_inequality_index <- read_csv(here("hw4_data", 
+                                      "HDR21-22_composite_indices.csv"))
+
+world <- st_read(here("hw4_data", 
+                      "World_Countries_T.shp"))
+```
+#Task 
+Join the global gender inequality index to spatial data of the World, creating a new column of difference in inequality between 2010 and 2019
+
+We have global gender inequality index data from 1990-2021 in the columns labelled 
+"gii_1990" to "gii_2021" 
+Steps: 
+1a. Extract "iso3" and "Country" columns needed for spatial join
+1b. Extract "gii_2010" and "gii_2021" columns, and maybe_gii_rank_2021 for deeper analysis. 
+2. Create a new column that computes difference between gii_2010 and gii_2021.
+3a. Create new column "iso3c" for accurate joining of spatial data (world_cleaned) to gii_data
+3b. Spatial join to world countries shapefile
+4. Map difference
+
+### 1. Extract necessary columns from gii data
+```{r}
+
+gii_data <- raw_inequality_index[, c("iso3", "country", 
+                         "gii_rank_2021", "gii_2010", "gii_2021")]
+
+```
+### 2. Compute difference between gii_2010 and gii_2021
+
+```{r}
+gii_data <- gii_data %>%
+  mutate(gii_diff=(gii_2021 - gii_2010))
+```
+### 3a. 
+
+```{r}
+#try using countrycode package to convert country names in "world" spatial data to iso3 code
+world_cleaned <- world %>%
+  mutate(iso3c = 
+           countrycode(world[[2]], origin = "country.name", destination = "iso3c")
+         )
+```
+In preliminary running of code, countrycode returned the following message: 
+"Some values were not matched unambiguously: Azores, Bonaire, Canarias, Glorioso Islands, Juan De Nova Island, Madeira, Micronesia, Saba, Saint Eustatius, Saint Martin, Turkiye"
+Manually edited Turkiye to Turkey for a new shapefile World_Countries_T
+The other values are negligible and likely to not have gii data.
+New message should read: 
+"Some values were not matched unambiguously: Azores, Bonaire, Canarias, Glorioso Islands, Juan De Nova Island, Madeira, Micronesia, Réunion, Saba, Saint Eustatius, Saint Martin"
+Moving on...
+### 3b. Spatial join gii_data to wold countries shapefile
+
+```{r}
+joined_data <- world_cleaned %>% 
+  left_join(., 
+            gii_data,
+            by = c("iso3c" = "iso3"))
+```
+### 4. Map the difference between gii data in 2010 and 2021
+
+```{r}
+tm_shape(joined_data) + 
+  tm_polygons(col = "gii_diff", 
+              midpoint = NA) +
+  tm_layout(main.title = "Gender Inequality from 2010-2021", 
+            main.title.position = "center",
+            legend.position = c("left", "bottom"))
+```
+
+
+
+
+
