@@ -92,7 +92,7 @@ tm_shape(joined_data) +
             legend.position = c("left", "bottom"))
 ```
 
-
+Feel free to adapt the code to your needs! 
 
 
 
