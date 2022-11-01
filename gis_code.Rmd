@@ -24,6 +24,9 @@ library(readr)
 ```
 
 read in global gender inequality data and world countries shapefile
+"HRD21-22_composite_indices.csv" obtainable at: https://hdr.undp.org/sites/default/files/2021-22_HDR/HDR21-22_Composite_indices_complete_time_series.csv
+"World_Countries_T.shp" obtainable in raw form at: https://hub.arcgis.com/datasets/2b93b06dc0dc4e809d3c8db5cb96ba69_0/explore?location=-2.688200%2C0.000000%2C1.41 
+But it has been manually edited Turkiye to Turkey for a new shapefile World_Countries_T (elaborated on in Step 3a)
 ```{r}
 raw_inequality_index <- read_csv(here("hw4_data", 
                                       "HDR21-22_composite_indices.csv"))
@@ -76,6 +79,8 @@ Moving on...
 ### 3b. Spatial join gii_data to wold countries shapefile
 
 ```{r}
+
+
 joined_data <- world_cleaned %>% 
   left_join(., 
             gii_data,
