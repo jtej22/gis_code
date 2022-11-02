@@ -64,6 +64,7 @@ gii_data <- gii_data %>%
 
 ```{r}
 #try using countrycode package to convert country names in "world" spatial data to iso3 code
+library(countrycode)
 world_cleaned <- world %>%
   mutate(iso3c = 
            countrycode(world[[2]], origin = "country.name", destination = "iso3c")
@@ -79,8 +80,6 @@ Moving on...
 ### 3b. Spatial join gii_data to wold countries shapefile
 
 ```{r}
-
-
 joined_data <- world_cleaned %>% 
   left_join(., 
             gii_data,
