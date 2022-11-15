@@ -87,13 +87,20 @@ joined_data <- world_cleaned %>%
 ```
 ### 4. Map the difference between gii data in 2010 and 2021
 
+# Change1:  change the color from the minimum value with dark red to dark green, since it means that they improve the most to have lower gender inequality
+
+# Change2: add country name text for those countries that have a strong improvement on gender inequality
+
 ```{r}
 tm_shape(joined_data) + 
   tm_polygons(col = "gii_diff", 
-              midpoint = NA) +
+              midpoint = NA,
+              palette = '-YlGn') +
   tm_layout(main.title = "Gender Inequality from 2010-2021", 
             main.title.position = "center",
-            legend.position = c("left", "bottom"))
+            legend.position = c("left", "bottom")) + 
+  tm_shape(joined_data %>% filter(gii_diff < -0.1)) + 
+  tm_text("iso3c", size = 0.4)
 ```
 
 Feel free to adapt the code to your needs! 
